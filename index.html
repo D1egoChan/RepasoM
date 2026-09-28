@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Repaso Interactivo y Minimalista</title>
+    
+    <!-- Fuentes y librerías matemáticas -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <!-- Librería de Iconos Minimalistas -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        /* Variables Modo Claro */
+        :root {
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-main: #2d3436;
+            --text-secondary: #636e72;
+            --primary: #6C5CE7;
+            --primary-hover: #5a4bcf;
+            --accent: #f1f2f6;
+            --accent-text: #2f3542;
+            --step-bg: #fdfdfd;
+            --shadow: 0 8px 30px rgba(0,0,0,0.04);
+            --border: #f1f2f6;
+            --link-hover-bg: #f8f9fa;
+        }
+
+        /* Variables Modo AMOLED */
+        [data-theme="amoled"] {
+            --bg-color: #000000;
+            --card-bg: #0a0a0a;
+            --text-main: #f5f6fa;
+            --text-secondary: #a4b0be;
+            --primary: #a29bfe;
+            --primary-hover: #8c7ae6;
+            --accent: #1e272e;
+            --accent-text: #d2dae2;
+            --step-bg: #111111;
+            --shadow: 0 8px 30px rgba(255,255,255,0.02);
+            --border: #222222;
+            --link-hover-bg: #151515;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .header {
+            text-align: center;
+            max-width: 800px;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: var(--primary);
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        /* Botón general */
+        .toggle-btn {
+            background-color: var(--card-bg);
+            color: var(--text-main);
+            border: 1px solid var(--border);
+            padding: 10px 22px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 500;
+            margin-bottom: 40px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: var(--shadow);
+        }
+
+        .toggle-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+            width: 100%;
+            max-width: 850px;
+        }
+
+        /* Estilo de las tarjetas (Slides) */
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+        }
+
+        .tag {
+            background-color: var(--accent);
+            color: var(--accent-text);
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+
+        .ejercicio-box {
+            margin-bottom: 25px;
+            border-left: 3px solid var(--primary);
+            padding-left: 20px;
+            font-size: 1.05rem;
+        }
+
+        /* Botones de Mostrar/Ocultar */
+        .btn-mostrar {
+            background-color: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .btn-mostrar:hover {
+            background-color: var(--primary);
+            color: #ffffff;
+        }
+        
+        .btn-mostrar.activo {
+            background-color: var(--accent);
+            border-color: var(--accent);
+            color: var(--text-secondary);
+        }
+
+        /* Contenedor del paso a paso */
+        .solucion {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-in-out, padding 0.4s ease-in-out;
+            background-color: var(--step-bg);
+            border-radius: 8px;
+            margin-top: 0;
+            border: 1px solid transparent;
+        }
+
+        .solucion.activa {
+            max-height: 1200px;
+            padding: 25px;
+            margin-top: 20px;
+            border-color: var(--border);
+        }
+
+        .paso {
+            margin-bottom: 12px;
+            line-height: 1.7;
+            font-size: 0.95rem;
+        }
+
+        .paso strong {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        /* Sección Minimalista de Videos (Listas) */
+        .youtube-section {
+            width: 100%;
+            max-width: 850px;
+            margin-top: 50px;
+            margin-bottom: 50px;
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+
+        .youtube-section h2.section-title {
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-size: 1.6rem;
+            margin-bottom: 35px;
+        }
+
+        .yt-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .yt-category {
+            background: var(--bg-color);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .yt-category h3 {
+            font-size: 1.1rem;
+            margin-top: 0;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 10px;
+        }
+
+        .yt-link {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            color: var(--text-main);
+            text-decoration: none;
+            padding: 12px 10px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+            line-height: 1.4;
+        }
+
+        .yt-link:hover {
+            background-color: var(--link-hover-bg);
+            color: var(--primary);
+            transform: translateX(5px);
+        }
+
+        .yt-link i {
+            flex-shrink: 0;
+            margin-top: 2px;
+            color: var(--text-secondary);
+            transition: color 0.2s ease;
+        }
+
+        .yt-link:hover i {
+            color: var(--primary);
+        }
+
+        /* Formato limpio al copiar a Word */
+        @media print {
+            .btn-mostrar, .toggle-btn, .youtube-section { display: none; }
+            .solucion { max-height: none !important; display: block; padding: 15px 0; border: none; }
+            .card { box-shadow: none; border: 1px solid #ddd; page-break-inside: avoid; margin-bottom: 20px;}
+            body { background: white; color: black; }
+        }
+    </style>
+</head>
+<body>
+
+    <button class="toggle-btn" onclick="toggleTheme()">
+        <i data-lucide="moon"></i> <span>Modo AMOLED</span>
+    </button>
+
+    <div class="header">
+        <h1><i data-lucide="book-open"></i> Guía de Estudio</h1>
+        <p style="color: var(--text-secondary);">Analiza el problema estructurado, desarróllalo en tu cuaderno y valida tu procedimiento.</p>
+    </div>
+
+    <div class="grid-container">
+        
+        <!-- TEMA 1: ÁLGEBRA -->
+        <div class="card">
+            <div class="tag"><i data-lucide="calculator" width="16" height="16"></i> 1. Álgebra</div>
+            <h2>Diferencia de Cuadrados</h2>
+            <div class="ejercicio-box">
+                <strong>Problema 1:</strong> Factoriza la siguiente expresión algebraica:<br><br>
+                \[ 25x^2 - 36y^2 \]
+            </div>
+            <button class="btn-mostrar" onclick="toggleSol('sol1', this)">
+                <i data-lucide="eye"></i> <span>Ver procedimiento</span>
+            </button>
+            <div class="solucion" id="sol1">
+                <div class="paso"><strong>Paso 1:</strong> Verifica que ambos términos tengan raíz cuadrada exacta y formen una resta.</div>
+                <div class="paso"><strong>Paso 2:</strong> Obtén la raíz del primer término: \(\sqrt{25x^2} = 5x\).</div>
+                <div class="paso"><strong>Paso 3:</strong> Obtén la raíz del segundo término: \(\sqrt{36y^2} = 6y\).</div>
+                <div class="paso"><strong>Respuesta:</strong> La factorización es la suma por la diferencia de las raíces: \[ (5x + 6y)(5x - 6y) \]</div>
+            </div>
+
+            <hr style="border: 0; border-top: 1px solid var(--border); margin: 35px 0;">
+
+            <h2>Factor Común</h2>
+            <div class="ejercicio-box">
+                <strong>Problema 2:</strong> Factoriza la siguiente expresión matemática extrayendo su factor común:<br><br>
+                \[ 14x^3 - 7x^2 + 21x \]
+            </div>
+            <button class="btn-mostrar" onclick="toggleSol('sol2', this)">
+                <i data-lucide="eye"></i> <span>Ver procedimiento</span>
+            </button>
+            <div class="solucion" id="sol2">
+                <div class="paso"><strong>Paso 1:</strong> Determina el máximo común divisor de los coeficientes (14, 7, 21), que corresponde a 7.</div>
+                <div class="paso"><strong>Paso 2:</strong> Ubica la variable que se repite en todos los términos con su menor exponente, que es \(x\).</div>
+                <div class="paso"><strong>Paso 3:</strong> El factor común es \(7x\). Procede a dividir cada término original entre \(7x\).</div>
+                <div class="paso"><strong>Respuesta:</strong> El resultado estructurado es: \[ 7x(2x^2 - x + 3) \]</div>
+            </div>
+        </div>
+
+        <!-- TEMA 2: PLANO CARTESIANO -->
+        <div class="card">
+            <div class="tag"><i data-lucide="crosshair" width="16" height="16"></i> 2. Plano Cartesiano</div>
+            <h2>Ubicación de Coordenadas</h2>
+            <div class="ejercicio-box">
+                <strong>Problema 1:</strong> Determina el cuadrante específico en el que se ubica el punto \( P(-4, 3) \) dentro del sistema de coordenadas.
+            </div>
+            <button class="btn-mostrar" onclick="toggleSol('sol3', this)">
+                <i data-lucide="eye"></i> <span>Ver procedimiento</span>
+            </button>
+            <div class="solucion" id="sol3">
+                <div class="paso"><strong>Paso 1:</strong> Identifica los valores de la coordenada \((x, y)\), donde \(x = -4\) y \(y = 3\).</div>
+                <div class="paso"><strong>Paso 2:</strong> Al ser \(x\) negativo, el punto se desplaza hacia la izquierda del origen sobre el eje horizontal.</div>
+                <div class="paso"><strong>Paso 3:</strong> Al ser \(y\) positivo, el punto se desplaza hacia arriba sobre el eje vertical.</div>
+                <div class="paso"><strong>Respuesta:</strong> El desplazamiento hacia la izquierda y arriba sitúa al punto en el <strong>Cuadrante II</strong>.</div>
+            </div>
+        </div>
+
+        <!-- TEMA 3: ECUACIÓN LINEAL -->
+        <div class="card">
+            <div class="tag"><i data-lucide="git-commit" width="16" height="16"></i> 3. Ecuación Lineal</div>
+            <h2>Despeje de una variable</h2>
+            <div class="ejercicio-box">
+                <strong>Problema 1:</strong> Resuelve la siguiente ecuación de primer grado encontrando el valor numérico de la variable \(x\):<br><br>
+                \[ 3(x + 4) - 2 = 19 \]
+            </div>
+            <button class="btn-mostrar" onclick="toggleSol('sol4', this)">
+                <i data-lucide="eye"></i> <span>Ver procedimiento</span>
+            </button>
+            <div class="solucion" id="sol4">
+                <div class="paso"><strong>Paso 1:</strong> Aplica la propiedad distributiva multiplicando el 3 por los términos dentro del paréntesis:<br> \( 3x + 12 - 2 = 19 \)</div>
+                <div class="paso"><strong>Paso 2:</strong> Simplifica los términos constantes en el lado izquierdo (\(12 - 2 = 10\)):<br> \( 3x + 10 = 19 \)</div>
+                <div class="paso"><strong>Paso 3:</strong> Resta 10 en ambos lados de la ecuación para aislar el término con variable:<br> \( 3x = 9 \)</div>
+                <div class="paso"><strong>Respuesta:</strong> Al dividir entre 3, el resultado es: \[ x = 3 \]</div>
+            </div>
+        </div>
+
+        <!-- TEMA 4: GEOMETRÍA Y TRIGONOMETRÍA -->
+        <div class="card">
+            <div class="tag"><i data-lucide="triangle" width="16" height="16"></i> 4. Geometría</div>
+            <h2>Teorema de Pitágoras</h2>
+            <div class="ejercicio-box">
+                <strong>Problema 1:</strong> En un triángulo rectángulo, las medidas de los catetos son 6 cm y 8 cm respectivamente. Calcula la longitud exacta de la hipotenusa.
+            </div>
+            <button class="btn-mostrar" onclick="toggleSol('sol5', this)">
+                <i data-lucide="eye"></i> <span>Ver procedimiento</span>
+            </button>
+            <div class="solucion" id="sol5">
+                <div class="paso"><strong>Paso 1:</strong> Emplea la fórmula del Teorema de Pitágoras: \( c^2 = a^2 + b^2 \).</div>
+                <div class="paso"><strong>Paso 2:</strong> Sustituye los valores de los catetos conocidos: \( c^2 = (6)^2 + (8)^2 \).</div>
+                <div class="paso"><strong>Paso 3:</strong> Calcula los cuadrados y suma los resultados: \( c^2 = 36 + 64 = 100 \).</div>
+                <div class="paso"><strong>Respuesta:</strong> Al extraer la raíz cuadrada, la longitud de la hipotenusa es \( c = 10 \text{ cm} \).</div>
+            </div>
+        </div>
+
+        <!-- NUEVA SECCIÓN: LISTA MINIMALISTA DE VIDEOS YOUTUBE -->
+        <div class="youtube-section">
+            <h2 class="section-title"><i data-lucide="monitor-play" width="28" height="28"></i> Directorio de Clases</h2>
+            
+            <div class="yt-grid">
+                
+                <!-- Categoría 1 -->
+                <div class="yt-category">
+                    <h3><i data-lucide="calculator" width="18" height="18"></i> Álgebra</h3>
+                    <a href="https://www.youtube.com/watch?v=a8CUEopWCN0" target="_blank" class="yt-link">
+                        <i data-lucide="play-circle" width="18" height="18"></i> <span>Los 6 métodos de factorización más usados (Profe Alex)</span>
+                    </a>
+                    <a href="https://www.youtube.com/watch?v=sSfO1CsKJ4g" target="_blank" class="yt-link">
+                        <i data-lucide="play-circle" width="18" height="18"></i> <span>Introducción: ¿Qué es factorizar?</span>
+                    </a>
+                    <a href="https://www.youtube.com/watch?v=xZHGl-RUqHs" target="_blank" class="yt-link">
+                        <i data-lucide="play-circle" width="18" height="18"></i> <span>Factorización: Trinomio ax²+bx+c</span>
+                    </a>
+                </div>
+
+                <!-- Categoría 2 -->
+                <div class="yt-category">
+                    <h3><i data-lucide="crosshair" width="18" height="18"></i> Plano Cartesiano</h3>
+                    <a href="https://www.youtube.com/watch?v=kzOzYY-T-50" target="_blank" class="yt-link">
+                        <i data-lucide="play-circle" width="18" height="18"></i> <span>Explicación súper fácil del plano (Daniel Carreón)</span>
+                    </a>
+                    <a href="https://www.youtube.com/watch?v=0cUkAd2o1yw" target="_blank" class="yt-link">
+                        <i data-lucide="play-circle" width="18" height="18"></i> <span>Cómo ubicar un punto paso a paso</span>
+                    </a>
+                </div>
+
+                <!-- Categoría 3 -->
+                <div class="yt-category">
+                    <h3><i data-lucide="git-commit" width="18" height="18"></i> Ecuaciones Lineales</h3>
+                    <a href="https://www.youtube.com/watch?v=qeKEA066OSs" target="_blank" class="yt-link">
+                        <i data-lucide="play-circle" width="18" height="18"></i> <span>Ecuaciones de primer grado: Ejercicios básicos (Julio Profe)</span>
+                    </a>
+                    <a href="https://www.youtube.com/watch?v=IHblqjW8RY8" target="_blank" class="yt-link">
+                        <i data-lucide="play-circle" width="18" height="18"></i> <span>Resolución de ecuaciones para principiantes</span>
+                    </a>
+                </div>
+
+                <!-- Categoría 4 -->
+                <div class="yt-category">
+                    <h3><i data-lucide="triangle" width="18" height="18"></i> Geometría</h3>
+                    <a href="https://www.youtube.com/watch?v=2UbdPiqAiHY" target="_blank" class="yt-link">
+                        <i data-lucide="play-circle" width="18" height="18"></i> <span>Cómo encontrar la hipotenusa (Profe Alex)</span>
+                    </a>
+                    <a href="https://www.youtube.com/watch?v=XfVWlO3sRw0" target="_blank" class="yt-link">
+                        <i data-lucide="play-circle" width="18" height="18"></i> <span>Introducción al Teorema de Pitágoras</span>
+                    </a>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Inicializar los iconos de Lucide
+        lucide.createIcons();
+
+        // Alternar entre modo Claro y AMOLED
+        function toggleTheme() {
+            const body = document.body;
+            const btn = document.querySelector('.toggle-btn');
+            const iconElement = btn.querySelector('i');
+            const textElement = btn.querySelector('span');
+            
+            if (body.getAttribute('data-theme') === 'amoled') {
+                body.removeAttribute('data-theme');
+                textElement.innerHTML = 'Modo AMOLED';
+                iconElement.setAttribute('data-lucide', 'moon');
+            } else {
+                body.setAttribute('data-theme', 'amoled');
+                textElement.innerHTML = 'Modo Claro';
+                iconElement.setAttribute('data-lucide', 'sun');
+            }
+            // Refrescar icono
+            lucide.createIcons();
+        }
+
+        // Mostrar u ocultar el procedimiento
+        function toggleSol(id, btn) {
+            const sol = document.getElementById(id);
+            const iconElement = btn.querySelector('i');
+            const textElement = btn.querySelector('span');
+            
+            if (sol.classList.contains('activa')) {
+                sol.classList.remove('activa');
+                btn.classList.remove('activo');
+                textElement.innerHTML = "Ver procedimiento";
+                iconElement.setAttribute('data-lucide', 'eye');
+            } else {
+                sol.classList.add('activa');
+                btn.classList.add('activo');
+                textElement.innerHTML = "Ocultar procedimiento";
+                iconElement.setAttribute('data-lucide', 'eye-off');
+            }
+            // Refrescar icono
+            lucide.createIcons();
+        }
+    </script>
+</body>
+</html>
